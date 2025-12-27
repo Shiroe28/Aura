@@ -43,22 +43,39 @@ class SupabaseService {
   Future<UserProfile?> getProfile() async {
     if (currentUserId == null) return null;
 
-    final response = await client
-        .from('profiles')
-        .select()
-        .eq('id', currentUserId!)
-        .single();
+    try {
+      final response = await client
+          .from('profiles')
+          .select()
+          .eq('id', currentUserId!)
+          .maybeSingle();
 
-    return UserProfile.fromJson(response);
+      if (response == null) {
+        print('⚠️ No profile found for user $currentUserId');
+        return null;
+      }
+
+      print('✅ Profile fetched: ${response}');
+      return UserProfile.fromJson(response);
+    } catch (e) {
+      print('❌ Error fetching profile: $e');
+      return null;
+    }
   }
 
   Future<void> updateProfile(String username, String? avatarUrl) async {
     if (currentUserId == null) return;
 
-    await client.from('profiles').update({
+    print('💾 Updating profile: username=$username, avatarUrl=$avatarUrl');
+
+    final result = await client.from('profiles').upsert({
+      'id': currentUserId,
       'username': username,
       'avatar_url': avatarUrl,
-    }).eq('id', currentUserId!);
+      'updated_at': DateTime.now().toIso8601String(),
+    }).select();
+
+    print('✅ Profile update result: $result');
   }
 
   // ==================== Goals ====================

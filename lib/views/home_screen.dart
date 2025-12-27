@@ -10,6 +10,7 @@ import 'goals/goals_screen.dart';
 import 'calendar/calendar_screen.dart';
 import 'history/history_screen.dart';
 import 'journal/journal_screen.dart';
+import 'settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     const CalendarScreen(),
     const JournalScreen(),
     const HistoryScreen(),
+    const SettingsScreen(),
   ];
 
   @override
@@ -134,6 +136,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               Icons.history,
               'History',
               4,
+            ),
+            _buildAnimatedNavItem(
+              Icons.settings_outlined,
+              Icons.settings,
+              'Settings',
+              5,
             ),
           ],
         ),

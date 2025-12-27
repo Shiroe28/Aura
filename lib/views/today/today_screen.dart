@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../providers/todos_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/goals_provider.dart';
+import '../../services/supabase_service.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/todo_card.dart';
 import '../../widgets/reflection_card.dart';
@@ -19,13 +20,28 @@ class TodayScreen extends StatefulWidget {
 
 class _TodayScreenState extends State<TodayScreen> {
   final TextEditingController _todoController = TextEditingController();
+  String _username = 'User';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<TodosProvider>(context, listen: false).loadTodayTodos();
+      _loadUsername();
     });
+  }
+
+  Future<void> _loadUsername() async {
+    try {
+      final profile = await SupabaseService().getProfile();
+      if (profile?.username != null && mounted) {
+        setState(() {
+          _username = profile!.username ?? 'User';
+        });
+      }
+    } catch (e) {
+      // Keep default 'User' if profile load fails
+    }
   }
 
   @override
@@ -90,17 +106,6 @@ class _TodayScreenState extends State<TodayScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Today'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await authProvider.signOut();
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/login');
-              }
-            },
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: () => todosProvider.loadTodayTodos(),
@@ -112,10 +117,21 @@ class _TodayScreenState extends State<TodayScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Welcome Message
+                    Text(
+                      'Welcome Back, $_username!',
+                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(
+                        color: AppTheme.forestGreen,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     // Date Header
                     Text(
                       DateFormat('EEEE, MMMM d').format(DateTime.now()),
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: AppTheme.sage,
+                      ),
                     ),
                     const SizedBox(height: 16),
 

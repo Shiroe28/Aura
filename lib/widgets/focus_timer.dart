@@ -168,41 +168,44 @@ class _FocusTimerState extends State<FocusTimer> {
           const SizedBox(height: 24),
           
           // Circular timer display
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: CircularProgressIndicator(
-                  value: progress,
-                  strokeWidth: 12,
-                  backgroundColor: AppTheme.sage.withOpacity(0.3),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    _isRunning ? AppTheme.softBlue : AppTheme.forestGreen,
+          GestureDetector(
+            onTap: !_isRunning ? _showCustomTimeDialog : null,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: CircularProgressIndicator(
+                    value: progress,
+                    strokeWidth: 12,
+                    backgroundColor: AppTheme.sage.withOpacity(0.3),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _isRunning ? AppTheme.softBlue : AppTheme.forestGreen,
+                    ),
                   ),
                 ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _formatTime(),
-                    style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                          color: AppTheme.stoneGrey,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 48,
-                        ),
-                  ),
-                  Text(
-                    _isRunning ? 'In Progress' : 'Ready',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: AppTheme.sage,
-                        ),
-                  ),
-                ],
-              ),
-            ],
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _formatTime(),
+                      style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                            color: AppTheme.stoneGrey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 48,
+                          ),
+                    ),
+                    Text(
+                      _isRunning ? 'In Progress' : 'Tap to set time',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: AppTheme.sage,
+                          ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           
           const SizedBox(height: 32),
@@ -227,16 +230,6 @@ class _FocusTimerState extends State<FocusTimer> {
                     ),
                   );
                 }),
-                // Custom time button
-                ActionChip(
-                  label: const Icon(Icons.edit, size: 18),
-                  tooltip: 'Custom time',
-                  onPressed: _showCustomTimeDialog,
-                  backgroundColor: AppTheme.sage,
-                  labelStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
               ],
             ),
           ],
